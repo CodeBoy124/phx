@@ -132,7 +132,7 @@ function ConfirmButton($attributes){
 function App(){
     return Phx::Run("
         <div>
-            <h1>Click "Confirm"</h1>
+            <h1>Click 'Confirm'</h1>
             <ConfirmButton onclick='someClickHandler()' />
         </div>
     ");
