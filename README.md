@@ -29,7 +29,7 @@ string: The content as a string containing html
 ```php
 <?php
 
-use CodeBoy124\Phx\Phx;
+use Codeboy124\Phx\Phx;
 
 function Greet($props){
     $name = $props["name"];
@@ -82,7 +82,7 @@ string: Basically the same as Phx::Run, so a string that contains the converted 
 ```php
 <?php
 
-use CodeBoy124\Phx\Phx;
+use Codeboy124\Phx\Phx;
 
 function Greet($props){
     $name = $props["name"];
