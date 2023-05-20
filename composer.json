@@ -1,0 +1,19 @@
+{
+    "name": "codeboy124/phx",
+    "description": "A simple function that convert some html string with components into regular html",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Codeboy124\\Phx\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "CodeBoy124",
+            "email": "koen7maart@gmail.com"
+        }
+    ],
+    "require": {
+        "ressio/pharse": "^0.2.0"
+    }
+}
