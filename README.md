@@ -141,8 +141,87 @@ function App(){
 echo App();
 ```
 
+## Scoping
+Phx also has a way to add scoped JavaScript and CSS.
+Be aware that Phx does not add any unique number to your functions, variables, class, etc names.
+
+### Usage
+
+#### Walkthrough?
+First require it using `use Codeboy124\Phx\Scope;`. Then you can create a new global `Scope` instance.
+In the constructor of that instance you can set the scope type ("js" or "css", default "css").
+After that you can call the `Add` and `AddSrc` methods.
+`Add` just adds some text and `AddSrc` adds a reference.
+When you want to render everything you can `include "path/to/phx/ScopeTag.php";` and of course replace path/to/phx with the right path.
+Then you can call the `Scopes` component in your Phx code and pass an attribute called `from` containing the name of the global variable that contains the `Scope` instance.
+Be carefull in what order you put the scopes, because the scopes are added inside components and if the `Scopes` component is called before them it will not detect them.
+This usually goes well if you have a simple layout component that does not use any components with scopes. This works, because the child elements are converted before passing to the layout and therefor have added theirs scopes.
+
+#### Example usage
+
+```php
+use Codeboy124\Phx\Phx;
+use Codeboy124\Phx\Scope;
+
+include("path/to/phx/ScopeTag.php");
+
+$js = new Scope("js");
+$css = new Scope("css"); // or just `new Scope()`, because "css" is default
+
+function ConfirmButton($attributes)
+{
+    global $js;
+    global $css;
+    $attributeString = Phx::Attributes($attributes);
+    $js->Add("
+        function ConfirmButton_someClickHandler(){
+            console.log(\"confirmed\");
+        }
+    ");
+    $css->Add("
+        .danger {
+            color: white;
+            background-color: red;
+        }
+    ");
+    return Phx::Run("
+        <button class='danger' $attributeString>Confirm</button>
+    ");
+}
+
+// Use layout, because $children are converted first and already add their scopes before using the Scopes component
+function Layout($_, $children)
+{
+    return Phx::Run("
+        <html>
+            <head>
+                <Scopes from='css' />
+            </head>
+            <body>
+                " . implode("", $children) . "
+                <Scopes from='js' />
+            </body>
+        </html>
+    ");
+}
+
+function App()
+{
+    global $js;
+    $js->Add("https://some.script.src/lib.min.js");
+    return Phx::Run("
+        <Layout>
+            <h1>Click 'Confirm'</h1>
+            <ConfirmButton onclick='ConfirmButton_someClickHandler()' />
+        </Layout>
+    ");
+}
+
+echo App();
+```
+
 ## Conclusion
 
-The Phx package provides a convenient way to write PHP code using a JSX-like syntax. It allows you to create components, render them, and format attributes easily. By leveraging the Phx package, you can build more expressive and maintainable PHP applications.
+The Phx package provides a convenient way to write PHP code using a JSX-like syntax. It allows you to create components, manage scoped js and css, render components, and format attributes easily. By leveraging the Phx package, you can build more expressive and maintainable PHP applications.
 
 You can also check out the 'example' folder, but all examples are almost the same as those in the documentation
