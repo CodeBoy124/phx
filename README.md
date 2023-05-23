@@ -208,7 +208,7 @@ function Layout($_, $children)
 function App()
 {
     global $js;
-    $js->Add("https://some.script.src/lib.min.js");
+    $js->AddSrc("https://some.script.src/lib.min.js");
     return Phx::Run("
         <Layout>
             <h1>Click 'Confirm'</h1>
