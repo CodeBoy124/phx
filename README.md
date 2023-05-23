@@ -28,6 +28,7 @@ string: The content as a string containing html
 
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Phx;
 
@@ -81,6 +82,7 @@ string: Basically the same as Phx::Run, so a string that contains the converted 
 
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Phx;
 
@@ -119,6 +121,7 @@ string: A formatted string that follows the following format 'mynumber=7 mystrin
 
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Phx;
 
@@ -152,6 +155,7 @@ Please create a GLOBAL instance of `Scope`
 #### **example**
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Scope;
 $js = new Scope("js");
@@ -172,6 +176,7 @@ Nothing, this is a void
 
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
@@ -207,6 +212,7 @@ Nothing, this is a void
 
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
@@ -239,6 +245,7 @@ string: Generated `script`, `style` or `link` tags
 
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
@@ -302,11 +309,12 @@ string: Generated `script`, `style` or `link` tags
 
 ```php
 <?php
+require("vendor/autoload.php");
 
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
 
-include("path/to/phx/ScopeTag.php"); // replace path/to/phx with the right stuff
+include("vendor/codeboy124/phx/ScopeTag.php"); // If this does not work just search for where you can find the `ScopeTag.php` file
 
 $js = new Scope("js");
 
