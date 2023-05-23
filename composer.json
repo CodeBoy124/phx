@@ -1,6 +1,6 @@
 {
     "name": "codeboy124/phx",
-    "description": "A simple function that convert some html string with components into regular html",
+    "description": "A simple function that convert some html string with components (that optionally contain scoped js and css) into regular html",
     "type": "library",
     "license": "MIT",
     "autoload": {

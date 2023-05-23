@@ -141,83 +141,225 @@ function App(){
 echo App();
 ```
 
-## Scoping
-Phx also has a way to add scoped JavaScript and CSS.
-Be aware that Phx does not add any unique number to your functions, variables, class, etc names.
+### `Scope`
 
-### Usage
+The `Scope` class manages all scoped js or css.
+Please create a GLOBAL instance of `Scope`
 
-#### Walkthrough?
-First require it using `use Codeboy124\Phx\Scope;`. Then you can create a new global `Scope` instance.
-In the constructor of that instance you can set the scope type ("js" or "css", default "css").
-After that you can call the `Add` and `AddSrc` methods.
-`Add` just adds some text and `AddSrc` adds a reference.
-When you want to render everything you can `include "path/to/phx/ScopeTag.php";` and of course replace path/to/phx with the right path.
-Then you can call the `Scopes` component in your Phx code and pass an attribute called `from` containing the name of the global variable that contains the `Scope` instance.
-Be carefull in what order you put the scopes, because the scopes are added inside components and if the `Scopes` component is called before them it will not detect them.
-This usually goes well if you have a simple layout component that does not use any components with scopes. This works, because the child elements are converted before passing to the layout and therefor have added theirs scopes.
+#### **constructor paramaters**
+* $type ("css" or "js", default is "css"): The kind of scoped content. This can be either "css" or "js"
 
-#### Example usage
+#### **example**
+```php
+<?php
+
+use Codeboy124\Phx\Scope;
+$js = new Scope("js");
+$css = new Scope(); // or `new Scope("css")`
+```
+
+### `Scope->Add`
+A method of the `Scope` class that adds some text content to your scopes.
+Be aware that it does not modify the source material and therefor be carefull that you don't define the same function in 2 places
+
+#### **paramaters**
+* $content (string): The text content to add
+
+#### **returns**
+Nothing, this is a void
+
+#### **example**
 
 ```php
+<?php
+
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
 
-include("path/to/phx/ScopeTag.php");
+$js = new Scope("js");
+
+function HelloWorldButton(){
+    global $js;
+    $js->Add("
+        function helloWorld(){
+            console.log('Hello, World!');
+        }
+    ");
+    return Phx::Run("
+        <button onclick='helloWorld()'>Click me</button>
+    ")
+}
+
+// etc
+
+```
+
+### `Scope->AddSrc`
+A method of the `Scope` class that adds some url to your scopes
+
+#### **paramaters**
+* $url (string): The url of the source
+
+#### **returns**
+Nothing, this is a void
+
+#### **example**
+
+```php
+<?php
+
+use Codeboy124\Phx\Phx;
+use Codeboy124\Phx\Scope;
 
 $js = new Scope("js");
-$css = new Scope("css"); // or just `new Scope()`, because "css" is default
 
-function ConfirmButton($attributes)
-{
-    global $js;
-    global $css;
-    $attributeString = Phx::Attributes($attributes);
-    $js->Add("
-        function ConfirmButton_someClickHandler(){
-            console.log(\"confirmed\");
-        }
-    ");
-    $css->Add("
-        .danger {
-            color: white;
-            background-color: red;
-        }
-    ");
-    return Phx::Run("
-        <button class='danger' $attributeString>Confirm</button>
-    ");
-}
-
-// Use layout, because $children are converted first and already add their scopes before using the Scopes component
-function Layout($_, $children)
-{
-    return Phx::Run("
-        <html>
-            <head>
-                <Scopes from='css' />
-            </head>
-            <body>
-                " . implode("", $children) . "
-                <Scopes from='js' />
-            </body>
-        </html>
-    ");
-}
-
-function App()
-{
+function ScopedSourceButton(){
     global $js;
     $js->AddSrc("https://some.script.src/lib.min.js");
     return Phx::Run("
-        <Layout>
-            <h1>Click 'Confirm'</h1>
-            <ConfirmButton onclick='ConfirmButton_someClickHandler()' />
-        </Layout>
+        <button onclick='someFunction()'>Click me</button>
+    ")
+}
+
+// etc
+
+```
+
+### `Scope->Read`
+A method of the `Scope` class that converts all the sources to actual html.
+This is usually done by adding the builtin `Scopes` component that I will explain later.
+
+#### **paramaters**
+None
+
+#### **returns**
+string: Generated `script`, `style` or `link` tags
+
+#### **example**
+
+```php
+<?php
+
+use Codeboy124\Phx\Phx;
+use Codeboy124\Phx\Scope;
+
+$js = new Scope("js");
+
+function HelloWorldButton(){
+    global $js;
+    $js->Add("
+        function helloWorld(){
+            console.log('Hello, World!');
+        }
+    ");
+    return Phx::Run("
+        <button onclick='helloWorld()'>Click me</button>
+    ")
+}
+
+// DOES NOT WORK! The Read method is called before the HelloWorldButton adds its scopes
+function App(){
+    $scopes = $js->Read();
+    return Phx::Run("
+        <main>
+            <HelloWorldButton />
+        </main>
+        $scopes
+    ")
+}
+
+// DOES WORK! The children are compiled first before they are passed to this function
+function Layout($_, $children){
+    $childrenJoined = implode("", $children);
+    $scopes = $js->Read();
+    return Phx::Run("
+        <main>
+            $childrenJoined
+        </main>
+        $scopes
+    ")
+}
+function App(){
+    return Phx::Run("
+        <HelloWorldButton />
     ");
 }
 
 echo App();
+
+```
+
+### `Scopes`
+A component that does the same as the `Read` method of `Scope`, but uses a component instead.
+
+#### **attributes**
+from (string): The name (without the '$' character) of your `Scope` instance
+
+#### **returns**
+string: Generated `script`, `style` or `link` tags
+
+#### **example**
+
+```php
+<?php
+
+use Codeboy124\Phx\Phx;
+use Codeboy124\Phx\Scope;
+
+include("path/to/phx/ScopeTag.php"); // replace path/to/phx with the right stuff
+
+$js = new Scope("js");
+
+function HelloWorldButton(){
+    global $js;
+    $js->Add("
+        function helloWorld(){
+            console.log('Hello, World!');
+        }
+    ");
+    return Phx::Run("
+        <button onclick='helloWorld()'>Click me</button>
+    ")
+}
+
+// DOES NOT WORK! The Read method is called before the HelloWorldButton adds its scopes
+function App(){
+    return Phx::Run("
+        <Scopes from='js' />
+        <main>
+            <HelloWorldButton />
+        </main>
+    ")
+}
+
+// DOES WORK! The scopes are read after the HelloWorldButton's scopes were added
+function App(){
+    return Phx::Run("
+        <main>
+            <HelloWorldButton />
+        </main>
+        <Scopes from='js' />
+    ");
+}
+
+// DOES WORK! The children are compiled first before they are passed to this function
+function Layout($_, $children){
+    $childrenJoined = implode("", $children);
+    return Phx::Run("
+        <Scopes from='js' />
+        <main>
+            $childrenJoined
+        </main>
+    ")
+}
+function App(){
+    return Phx::Run("
+        <HelloWorldButton />
+    ");
+}
+
+echo App();
+
 ```
 
 ## Conclusion
