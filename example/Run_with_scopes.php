@@ -6,8 +6,8 @@ use Codeboy124\Phx\Scope;
 
 include(__DIR__ . "/../src/ScopeTag.php");
 
-$js = new Scope("js");
-$css = new Scope("css");
+$js = new Scope("http://localhost:3000/", "js");
+$css = new Scope("http://localhost:3000/", "css");
 
 function ConfirmButton($attributes)
 {

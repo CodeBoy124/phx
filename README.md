@@ -150,6 +150,7 @@ The `Scope` class manages all scoped js or css.
 Please create a GLOBAL instance of `Scope`
 
 #### **constructor paramaters**
+* $root (string, default ""): What root to use for sources that use a relative url.
 * $type ("css" or "js", default is "css"): The kind of scoped content. This can be either "css" or "js"
 
 #### **example**
@@ -158,8 +159,8 @@ Please create a GLOBAL instance of `Scope`
 require("vendor/autoload.php");
 
 use Codeboy124\Phx\Scope;
-$js = new Scope("js");
-$css = new Scope(); // or `new Scope("css")`
+$js = new Scope("http://localhost:3000/", "js");
+$css = new Scope(); // or `new Scope("", "css")`
 ```
 
 ### `Scope->Add`
@@ -181,7 +182,7 @@ require("vendor/autoload.php");
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
 
-$js = new Scope("js");
+$js = new Scope("", "js");
 
 function HelloWorldButton(){
     global $js;
@@ -217,14 +218,15 @@ require("vendor/autoload.php");
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
 
-$js = new Scope("js");
+$js = new Scope("http://localhost:3000/", "js");
 
 function ScopedSourceButton(){
     global $js;
-    $js->AddSrc("https://some.script.src/lib.min.js");
+    $js->AddSrc("https://some.script.src/lib.min.js"); // An absolute url that does not use the root
+    $js->AddSrc("/assets/js/scoped-source-button.js"); // A relative url that combines this url with the root (http://locahost:3000/)
     return Phx::Run("
         <button onclick='someFunction()'>Click me</button>
-    ")
+    ");
 }
 
 // etc
@@ -250,7 +252,7 @@ require("vendor/autoload.php");
 use Codeboy124\Phx\Phx;
 use Codeboy124\Phx\Scope;
 
-$js = new Scope("js");
+$js = new Scope("", "js");
 
 function HelloWorldButton(){
     global $js;
@@ -316,7 +318,7 @@ use Codeboy124\Phx\Scope;
 
 include("vendor/codeboy124/phx/ScopeTag.php"); // If this does not work just search for where you can find the `ScopeTag.php` file
 
-$js = new Scope("js");
+$js = new Scope("", "js");
 
 function HelloWorldButton(){
     global $js;
